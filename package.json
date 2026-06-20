@@ -1,0 +1,46 @@
+{
+  "name": "gradient-shimmer",
+  "version": "0.1.0",
+  "description": "A zero-dependency React text shimmer that sweeps a multi-stop gradient highlight across your text. Web-Animations-API driven — no CSS import, no Tailwind.",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup && node scripts/add-use-client.mjs",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "react",
+    "shimmer",
+    "gradient",
+    "text",
+    "animation",
+    "web-animations-api",
+    "loading",
+    "skeleton",
+    "running"
+  ],
+  "author": "ziye",
+  "license": "MIT",
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "react": "^19.0.0",
+    "tsup": "^8.3.0",
+    "typescript": "^5.5.0"
+  }
+}
