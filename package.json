@@ -1,6 +1,6 @@
 {
   "name": "gradient-shimmer",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A zero-dependency React text shimmer that sweeps a multi-stop gradient highlight across your text. Web-Animations-API driven — no CSS import, no Tailwind.",
   "type": "module",
   "packageManager": "pnpm@11.3.0",

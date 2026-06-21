@@ -28,10 +28,37 @@ function Label({ children }: { children: ReactNode }) {
 function InstallCard({ command }: { command: ReactNode }) {
   const [copied, setCopied] = useState(false)
   const checkRef = useRef<HTMLSpanElement | null>(null)
-  const copy = () => {
-    navigator.clipboard?.writeText(INSTALL)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 1200)
+  const copy = async () => {
+    let ok = false
+    try {
+      if (window.isSecureContext && navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(INSTALL)
+        ok = true
+      }
+    } catch {
+      ok = false
+    }
+    if (!ok) {
+      // Fallback for non-secure contexts (LAN IP / http) and older browsers.
+      try {
+        const ta = document.createElement("textarea")
+        ta.value = INSTALL
+        ta.setAttribute("readonly", "")
+        ta.style.position = "fixed"
+        ta.style.top = "0"
+        ta.style.opacity = "0"
+        document.body.appendChild(ta)
+        ta.select()
+        ok = document.execCommand("copy")
+        document.body.removeChild(ta)
+      } catch {
+        ok = false
+      }
+    }
+    if (ok) {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1200)
+    }
   }
   useEffect(() => {
     if (copied && checkRef.current && !prefersReducedMotion()) {

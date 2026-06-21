@@ -11,9 +11,6 @@ import {
 } from "./visibility"
 
 const FALLBACK_TEXT_WIDTH_PX = 96
-// Sweep speed is normalized so the highlight travels a constant px/s at any size.
-const SPEED_MULTIPLIER = 0.8
-const REFERENCE_DISTANCE_PX = 280
 const MAX_SPREAD_PX = 48
 const SPREAD_MID_RATIO = 0.72
 // Font size the spread/char default is tuned for; larger text scales up from here.
@@ -81,10 +78,9 @@ export function GradientShimmer({
       const layerWidth = Math.max(1, textWidth + spreadPx * 2)
       const start = -spreadPx - layerWidth / 2
       const end = textWidth + spreadPx - layerWidth / 2
-      const travel = Math.max(1, textWidth + spreadPx * 2)
-      const referenceDuration = safeDuration / SPEED_MULTIPLIER
-      const pixelsPerSecond = REFERENCE_DISTANCE_PX / referenceDuration
-      const durationMs = (travel / pixelsPerSecond) * 1000
+      // `duration` is the literal sweep time in seconds, independent of text
+      // width — so every shimmer on the page runs at the same frequency.
+      const durationMs = safeDuration * 1000
       el.style.setProperty("--gs-spread", `${spreadPx}px`)
       el.style.setProperty("--gs-spread-mid", `${spreadPx * SPREAD_MID_RATIO}px`)
       el.style.backgroundSize = `${layerWidth}px 100%`
