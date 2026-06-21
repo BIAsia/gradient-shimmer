@@ -1,4 +1,4 @@
-import type { CSSProperties, ElementType } from "react"
+import type { ElementType, HTMLAttributes } from "react"
 
 /** A single stop in the highlight band, positioned 0..1 across the sweep. */
 export interface GradientStop {
@@ -9,7 +9,6 @@ export interface GradientStop {
 export type GradientPresetName =
   | "sunrise"
   | "bubble"
-  | "sunset"
   | "peach"
   | "tonic"
   | "mint"
@@ -23,7 +22,7 @@ export type GradientInput = GradientStop[] | GradientPresetName
 /** Named easing presets for the sweep (no raw cubic-bezier in the public API). */
 export type EasingPreset = "smooth" | "gentle" | "snappy"
 
-export interface GradientShimmerProps {
+export interface GradientShimmerProps extends Omit<HTMLAttributes<HTMLElement>, "children"> {
   /** The text to shimmer. Plain string only — the gradient sweeps over it. */
   children: string
   /** Multi-stop gradient or a preset name. Defaults to `"sunrise"`. */
@@ -45,12 +44,10 @@ export interface GradientShimmerProps {
   baseColor?: string
   /** Pause the sweep while the page is scrolling. Defaults to `true`. */
   pauseOnScroll?: boolean
-  /** Pause + drop the layer while off-screen. Defaults to `true`. */
+  /** Pause while outside the viewport. Defaults to `true`. */
   pauseWhenOffscreen?: boolean
   /** Render a static gradient (no sweep) under `prefers-reduced-motion`. Defaults to `true`. */
   respectReducedMotion?: boolean
   /** Element to render. Defaults to `"span"`. */
   as?: ElementType
-  className?: string
-  style?: CSSProperties
 }

@@ -5,7 +5,7 @@ export default defineConfig({
   format: ["esm", "cjs"],
   dts: true,
   clean: true,
-  sourcemap: true,
+  sourcemap: false,
   treeshake: true,
   target: "es2020",
   external: ["react", "react-dom"],

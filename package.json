@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "A zero-dependency React text shimmer that sweeps a multi-stop gradient highlight across your text. Web-Animations-API driven — no CSS import, no Tailwind.",
   "type": "module",
+  "packageManager": "pnpm@11.3.0",
   "sideEffects": false,
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -14,12 +15,17 @@
       "require": "./dist/index.cjs"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup && node scripts/add-use-client.mjs",
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "npm run build"
+    "smoke:pack": "node scripts/smoke-pack.mjs",
+    "release:check": "npm run typecheck && npm run smoke:pack && npm pack --dry-run",
+    "prepack": "npm run build",
+    "prepublishOnly": "npm run release:check"
   },
   "keywords": [
     "react",
@@ -47,6 +53,7 @@
   },
   "devDependencies": {
     "@types/react": "^19.0.0",
+    "playwright-core": "^1.61.0",
     "react": "^19.0.0",
     "tsup": "^8.3.0",
     "typescript": "^5.5.0"

@@ -7,6 +7,10 @@ import { SplitText } from "gsap/SplitText"
 // (free since 3.13), so no extra license/bundle plumbing on the site.
 gsap.registerPlugin(useGSAP, ScrollTrigger, SplitText)
 
+// Conditional refs (copy check, slider value) and StrictMode's double-invoke
+// produce harmless "target not found" noise — quiet it.
+gsap.config({ nullTargetWarn: false })
+
 /** True when the user asked for reduced motion. Mirrors the library's own gate. */
 export function prefersReducedMotion(): boolean {
   return (

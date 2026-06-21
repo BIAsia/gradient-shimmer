@@ -27,12 +27,6 @@ export const gradientPresets: Record<GradientPresetName, GradientStop[]> = {
     { color: "#8CBFF0", position: 0.82 },
     { color: "#78B0FF", position: 1 },
   ],
-  sunset: [
-    { color: "#B6D3EF", position: 0 },
-    { color: "#E8CCAF", position: 0.4 },
-    { color: "#F09050", position: 0.63 },
-    { color: "#F888A0", position: 0.9 },
-  ],
   peach: [
     { color: "#D9F5FA", position: 0 },
     { color: "#FCD9D6", position: 0.31 },

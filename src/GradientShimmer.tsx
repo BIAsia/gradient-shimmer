@@ -10,19 +10,31 @@ import {
   supportsBackgroundClipText,
 } from "./visibility"
 
+const FALLBACK_TEXT_WIDTH_PX = 96
 // Sweep speed is normalized so the highlight travels a constant px/s at any size.
 const SPEED_MULTIPLIER = 0.8
 const REFERENCE_DISTANCE_PX = 280
-const FALLBACK_TEXT_WIDTH_PX = 96
 const MAX_SPREAD_PX = 48
 const SPREAD_MID_RATIO = 0.72
 // Font size the spread/char default is tuned for; larger text scales up from here.
 const BASE_FONT_PX = 14
+const DEFAULT_DURATION_SECONDS = 1.45
+const DEFAULT_SPREAD = 3
+const DEFAULT_ANGLE = 105
 
 function resolveStops(gradient: GradientInput | undefined): GradientStop[] {
   if (!gradient) return gradientPresets.sunrise
   if (typeof gradient === "string") return gradientPresets[gradient] ?? gradientPresets.sunrise
   return gradient
+}
+
+function finiteOr(value: number, fallback: number): number {
+  return Number.isFinite(value) ? value : fallback
+}
+
+function revealNormalText(el: HTMLElement) {
+  el.style.removeProperty("background-image")
+  el.style.removeProperty("-webkit-text-fill-color")
 }
 
 /**
@@ -33,9 +45,9 @@ export function GradientShimmer({
   children,
   gradient,
   easing = "smooth",
-  duration = 1.45,
-  spread = 3,
-  angle = 105,
+  duration = DEFAULT_DURATION_SECONDS,
+  spread = DEFAULT_SPREAD,
+  angle = DEFAULT_ANGLE,
   pauseBetween = 1000,
   baseColor = "currentColor",
   pauseOnScroll = true,
@@ -44,14 +56,18 @@ export function GradientShimmer({
   as = "span",
   className,
   style,
+  ...restProps
 }: GradientShimmerProps) {
   const ref = useRef<HTMLElement | null>(null)
+  const safeDuration = Math.max(0.001, finiteOr(duration, DEFAULT_DURATION_SECONDS))
+  const safeSpread = Math.max(0, finiteOr(spread, DEFAULT_SPREAD))
+  const safeAngle = finiteOr(angle, DEFAULT_ANGLE)
   const stops = useMemo(() => resolveStops(gradient), [gradient])
-  const backgroundImage = useMemo(() => buildBandGradient(stops, angle), [stops, angle])
+  const backgroundImage = useMemo(() => buildBandGradient(stops, safeAngle), [stops, safeAngle])
   const easingValue = easingPresets[easing] ?? easingPresets.smooth
 
   // SSR-safe seed so the first paint has a valid band (no font scale known yet).
-  const initialSpread = Math.min(children.length * spread, MAX_SPREAD_PX)
+  const initialSpread = Math.min(children.length * safeSpread, MAX_SPREAD_PX)
 
   useEffect(() => {
     const el = ref.current
@@ -61,12 +77,12 @@ export function GradientShimmer({
       const textWidth = el.getBoundingClientRect().width || FALLBACK_TEXT_WIDTH_PX
       const fontSize = Number.parseFloat(getComputedStyle(el).fontSize) || BASE_FONT_PX
       const fontScale = fontSize / BASE_FONT_PX
-      const spreadPx = Math.min(children.length * spread * fontScale, MAX_SPREAD_PX * fontScale)
+      const spreadPx = Math.min(children.length * safeSpread * fontScale, MAX_SPREAD_PX * fontScale)
       const layerWidth = Math.max(1, textWidth + spreadPx * 2)
       const start = -spreadPx - layerWidth / 2
       const end = textWidth + spreadPx - layerWidth / 2
       const travel = Math.max(1, textWidth + spreadPx * 2)
-      const referenceDuration = duration / SPEED_MULTIPLIER
+      const referenceDuration = safeDuration / SPEED_MULTIPLIER
       const pixelsPerSecond = REFERENCE_DISTANCE_PX / referenceDuration
       const durationMs = (travel / pixelsPerSecond) * 1000
       el.style.setProperty("--gs-spread", `${spreadPx}px`)
@@ -79,7 +95,7 @@ export function GradientShimmer({
     // the text entirely. Strip it so the text renders in its normal color, and
     // skip the sweep (there's nothing to clip the gradient to).
     if (!supportsBackgroundClipText()) {
-      el.style.removeProperty("-webkit-text-fill-color")
+      revealNormalText(el)
       return
     }
 
@@ -87,6 +103,7 @@ export function GradientShimmer({
     measure()
 
     if (respectReducedMotion && prefersReducedMotion()) return // static, no sweep
+    if (typeof el.animate !== "function") return // static, no sweep
 
     let anim: Animation | null = null
     let pauseTimer: ReturnType<typeof setTimeout> | undefined
@@ -133,8 +150,8 @@ export function GradientShimmer({
     }
   }, [
     children,
-    spread,
-    duration,
+    safeSpread,
+    safeDuration,
     easingValue,
     pauseBetween,
     pauseOnScroll,
@@ -162,5 +179,5 @@ export function GradientShimmer({
     ...style,
   }
 
-  return createElement(as, { ref, className, style: mergedStyle }, children)
+  return createElement(as, { ...restProps, ref, className, style: mergedStyle }, children)
 }
