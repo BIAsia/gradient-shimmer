@@ -34,6 +34,14 @@
   ],
   "author": "ziye",
   "license": "MIT",
+  "homepage": "https://github.com/BIAsia/gradient-shimmer#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BIAsia/gradient-shimmer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/BIAsia/gradient-shimmer/issues"
+  },
   "peerDependencies": {
     "react": ">=18"
   },

@@ -42,7 +42,7 @@ under `prefers-reduced-motion`.
 | Prop | Type | Default | Notes |
 | --- | --- | --- | --- |
 | `children` | `string` | — | The text to shimmer. |
-| `gradient` | `GradientStop[] \| "sunrise" \| "sunset" \| "mint" \| "twilight" \| "candy"` | `"sunrise"` | Multi-stop band or a preset. |
+| `gradient` | `GradientStop[] \| GradientPresetName` | `"sunrise"` | Multi-stop band or a preset (see below). |
 | `easing` | `"smooth" \| "gentle" \| "snappy"` | `"smooth"` | Sweep curve. |
 | `duration` | `number` | `1.45` | Reference speed; normalized by text width (constant px/s). |
 | `spread` | `number` | `3` | Band width in px/char; scales with font size. |
@@ -54,6 +54,12 @@ under `prefers-reduced-motion`.
 | `respectReducedMotion` | `boolean` | `true` | Static gradient under reduced motion. |
 | `as` | `ElementType` | `"span"` | Element to render. |
 | `className` / `style` | — | — | Passed through. |
+
+## Presets
+
+Built-in `gradient` names (`GradientPresetName`):
+
+`sunrise` · `bubble` · `sunset` · `peach` · `tonic` · `mint` · `spring` · `twilight` · `bay`
 
 ## Also exported
 

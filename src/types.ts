@@ -6,7 +6,16 @@ export interface GradientStop {
   color: string
 }
 
-export type GradientPresetName = "sunrise" | "sunset" | "mint" | "twilight" | "candy"
+export type GradientPresetName =
+  | "sunrise"
+  | "bubble"
+  | "sunset"
+  | "peach"
+  | "tonic"
+  | "mint"
+  | "spring"
+  | "twilight"
+  | "bay"
 
 /** Either an explicit multi-stop gradient or a built-in preset name. */
 export type GradientInput = GradientStop[] | GradientPresetName

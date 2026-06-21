@@ -1,3 +1,14 @@
+/** True when `background-clip: text` is usable (prefixed or not). SSR-safe. */
+export function supportsBackgroundClipText(): boolean {
+  if (typeof window === "undefined" || typeof window.CSS?.supports !== "function") {
+    return true // assume support on the server / old engines; the visual degrades anyway
+  }
+  return (
+    window.CSS.supports("background-clip", "text") ||
+    window.CSS.supports("-webkit-background-clip", "text")
+  )
+}
+
 /** True when the user asked for reduced motion. SSR-safe. */
 export function prefersReducedMotion(): boolean {
   return (

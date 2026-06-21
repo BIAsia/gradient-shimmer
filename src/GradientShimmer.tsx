@@ -4,7 +4,11 @@ import { createElement, type CSSProperties, useEffect, useMemo, useRef } from "r
 import { buildBandGradient } from "./build-band-gradient"
 import { easingPresets, gradientPresets } from "./presets"
 import type { GradientInput, GradientShimmerProps, GradientStop } from "./types"
-import { observeShimmerActive, prefersReducedMotion } from "./visibility"
+import {
+  observeShimmerActive,
+  prefersReducedMotion,
+  supportsBackgroundClipText,
+} from "./visibility"
 
 // Sweep speed is normalized so the highlight travels a constant px/s at any size.
 const SPEED_MULTIPLIER = 0.8
@@ -71,6 +75,14 @@ export function GradientShimmer({
       return { start, end, durationMs }
     }
 
+    // No `background-clip: text` support → the transparent text-fill would hide
+    // the text entirely. Strip it so the text renders in its normal color, and
+    // skip the sweep (there's nothing to clip the gradient to).
+    if (!supportsBackgroundClipText()) {
+      el.style.removeProperty("-webkit-text-fill-color")
+      return
+    }
+
     // Refine the seeded vars with a real measurement.
     measure()
 
@@ -84,13 +96,17 @@ export function GradientShimmer({
     const runSweep = () => {
       if (cancelled) return
       const { start, end, durationMs } = measure()
-      anim = el.animate(
+      const next = el.animate(
         [{ backgroundPosition: `${start}px center` }, { backgroundPosition: `${end}px center` }],
         { duration: durationMs, easing: easingValue, fill: "forwards" }
       )
-      if (!active) anim.pause()
-      anim.onfinish = () => {
-        anim = null
+      if (!active) next.pause()
+      // Cancel the previous (now-finished) sweep only after the next one has taken
+      // over the property — otherwise finished `fill: forwards` animations pile up
+      // on the element across cycles.
+      anim?.cancel()
+      anim = next
+      next.onfinish = () => {
         pauseTimer = setTimeout(runSweep, Math.max(0, pauseBetween))
       }
     }
@@ -137,7 +153,8 @@ export function GradientShimmer({
     backgroundColor: "var(--gs-base)",
     WebkitBackgroundClip: "text",
     backgroundClip: "text",
-    color: "transparent",
+    // Reveal the clipped gradient via text-fill-color (not `color: transparent`)
+    // so `currentColor` in `--gs-base` still resolves to the real text color.
     WebkitTextFillColor: "transparent",
     ["--gs-base" as string]: baseColor,
     ["--gs-spread" as string]: `${initialSpread}px`,
