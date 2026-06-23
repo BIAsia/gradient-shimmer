@@ -272,7 +272,7 @@ export function App() {
               </svg>
               GitHub
             </a>
-            <a className="pill-link" href="https://x.com" aria-label="X">
+            <a className="pill-link" href="https://x.com/mona_biasia" aria-label="X">
               <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor" aria-hidden>
                 <path d="M12.6 0h2.45l-5.36 6.12L16 16h-4.94l-3.87-5.06L2.77 16H.32l5.73-6.55L0 0h5.06l3.5 4.63L12.6 0Zm-.86 14.55h1.36L4.32 1.38H2.86l8.88 13.17Z" />
               </svg>
